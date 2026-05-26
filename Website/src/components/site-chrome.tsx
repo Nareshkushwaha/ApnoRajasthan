@@ -8,7 +8,6 @@ import { CATEGORY_LABELS, CATEGORY_PATH } from "@/data/news";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
 
-// 👉 BADAAL: Yahan se Gallery hata diya hai
 const NAV: { label: string; to: string; icon: any }[] = [
   { label: "होम", to: "/", icon: Home },
   { label: CATEGORY_LABELS.politics, to: CATEGORY_PATH.politics, icon: Landmark },
@@ -55,7 +54,6 @@ export function SiteHeader() {
             <span className="opacity-30">|</span>
             <Link to="/contact" className="hover:text-primary transition-colors">संपर्क</Link>
             
-            {/* 👉 BADAAL: Login/Signup ko puri tarah hata kar Social links ko theek se align kar diya */}
             <div className="hidden md:flex items-center gap-2.5 ml-2 pl-3 border-l border-white/20">
               <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="hover:text-primary transition-colors"><Facebook size={14} /></a>
               <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter" className="hover:text-primary transition-colors"><Twitter size={14} /></a>
@@ -185,17 +183,25 @@ function BreakingTicker() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          const latestItems = data.slice(0, 5).map((n: any) => ({
-            title: n.title,
-            slug: n.id.toString()
-          }));
-          setItems(latestItems);
+          // 👉 FILTER LOGIC: Sirf isBreaking true wali khabren hi filter hongi
+          const breakingNewsOnly = data.filter((n: any) => n.isBreaking === true || n.isBreaking === "true");
+          
+          if (breakingNewsOnly.length > 0) {
+            const latestItems = breakingNewsOnly.slice(0, 5).map((n: any) => ({
+              title: n.title,
+              slug: n.urlSlug || n.id.toString()
+            }));
+            setItems(latestItems);
+          } else {
+            // Agar database mein ek bhi khabar breaking nahi hai
+            setItems([{ title: "आज की कोई ब्रेकिंग न्यूज़ नहीं है", slug: "" }]);
+          }
         }
       })
       .catch(err => console.error("Breaking news fetch error:", err));
   }, []);
 
-  const displayItems = [...items, ...items, ...items];
+  const displayItems = items.length > 1 ? [...items, ...items, ...items] : items;
 
   return (
     <div className="bg-primary text-primary-foreground flex items-stretch overflow-hidden border-b border-primary/20">
@@ -204,10 +210,10 @@ function BreakingTicker() {
         ब्रेकिंग
       </div>
       <div className="overflow-hidden flex-1 relative py-2">
-        <div className="flex gap-10 animate-ticker whitespace-nowrap text-sm font-medium">
+        <div className={`flex gap-10 whitespace-nowrap text-sm font-medium ${items.length > 1 ? 'animate-ticker' : 'px-4'}`}>
           {displayItems.map((item, i) => (
             <span key={i} className="flex items-center gap-3">
-              <span className="opacity-50 text-[10px]">●</span>
+              {items.length > 1 && <span className="opacity-50 text-[10px]">●</span>}
               {item.slug ? (
                 <Link to="/article/$slug" params={{ slug: item.slug }} className="hover:underline transition-all underline-offset-4">
                   {item.title}

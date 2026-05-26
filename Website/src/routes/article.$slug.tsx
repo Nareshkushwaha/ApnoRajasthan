@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CATEGORY_LABELS, CATEGORY_PATH } from "@/data/news";
-import { ArticleCard, AdSlot } from "@/components/news-ui";
+import { AdSlot } from "@/components/news-ui"; // ArticleCard हटा दिया है क्योंकि अब छोटे बॉक्स बनाए हैं
 import { Facebook, Twitter, Linkedin, Link2, Clock, MessageCircle, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -18,7 +18,6 @@ export const Route = createFileRoute("/article/$slug")({
         slug: data.id.toString(),
         title: data.title,
         excerpt: data.content ? data.content.replace(/<[^>]+>/g, '').substring(0, 150) + "..." : "",
-        // 👉 YAHAN FIX KIYA HAI: 'body' ko array banane ki jagah raw HTML string rakha hai
         contentHtml: data.content || "", 
         image: data.imageUrl || "https://picsum.photos/800/400",
         category: data.category ? data.category.trim().toLowerCase() : 'rajasthan',
@@ -60,9 +59,7 @@ function ArticlePage() {
   const { article: a } = Route.useLoaderData();
   const [related, setRelated] = useState<any[]>([]);
 
-  const [comments, setComments] = useState([
-    { name: "अपनो राजस्थान", time: "Admin", text: "इस ख़बर पर अपनी राय ज़रूर दें!" }
-  ]);
+  // 👉 BADAAL: पुराने कमेंट्स की लिस्ट हटा दी, अब सिर्फ नाम और कमेंट का फॉर्म रहेगा
   const [commentName, setCommentName] = useState("");
   const [commentText, setCommentText] = useState("");
 
@@ -110,15 +107,11 @@ function ArticlePage() {
       toast.error("कृपया नाम और टिप्पणी दोनों लिखें!");
       return;
     }
-    const newComment = {
-      name: commentName,
-      time: "अभी-अभी",
-      text: commentText
-    };
-    setComments([newComment, ...comments]); 
+    
+    // 👉 BADAAL: अब कमेंट सबमिट होने पर सिर्फ मैसेज आएगा और बॉक्स खाली हो जाएगा।
     setCommentName("");
     setCommentText("");
-    toast.success("आपकी टिप्पणी पोस्ट हो गई!");
+    toast.success("आपकी टिप्पणी सफलतापूर्वक भेज दी गई है!");
   };
 
   return (
@@ -174,9 +167,7 @@ function ArticlePage() {
               </button>
             </div>
 
-            {/* 🔥 YAHAN HAI ASALI CKEDITOR HTML RENDERER 🔥 */}
             <div className="p-6">
-              {/* Ye styles lagaye hain taaki CKEditor ki multiple images bahar na nikle aur links blue dikhein */}
               <style>{`
                 .ck-content-area img { max-width: 100%; height: auto; border-radius: 8px; margin: 15px auto; }
                 .ck-content-area a { color: #0ea5e9; text-decoration: underline; font-weight: 500; }
@@ -208,14 +199,14 @@ function ArticlePage() {
               </div>
             </div>
 
+            {/* 👉 BADAAL: यहाँ से दूसरों के कमेंट्स दिखना बंद कर दिए हैं */}
             <div className="border-t border-border p-6 bg-background">
               <h3 className="text-2xl font-extrabold mb-6 flex items-center gap-2 text-ink">
                 <MessageCircle className="text-primary" size={24} /> 
-                टिप्पणियाँ ({comments.length})
+                अपनी राय दें
               </h3>
               
-              <form onSubmit={handleCommentSubmit} className="space-y-4 mb-8 bg-muted/30 p-5 rounded-lg border border-border">
-                <h4 className="font-bold mb-2">अपनी राय दें:</h4>
+              <form onSubmit={handleCommentSubmit} className="space-y-4 bg-muted/30 p-5 rounded-lg border border-border">
                 <input 
                   type="text" 
                   value={commentName}
@@ -226,33 +217,14 @@ function ArticlePage() {
                 <textarea 
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="अपनी टिप्पणी लिखें…" 
+                  placeholder="इस ख़बर पर अपनी टिप्पणी लिखें…" 
                   rows={3} 
                   className="w-full px-4 py-2 border border-input rounded-md bg-background resize-none focus:ring-2 focus:ring-primary outline-none transition-all" 
                 />
                 <button type="submit" className="bg-primary text-primary-foreground px-6 py-2.5 rounded-md font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
-                  <Send size={16} /> टिप्पणी पोस्ट करें
+                  <Send size={16} /> टिप्पणी सबमिट करें
                 </button>
               </form>
-
-              <ul className="space-y-6">
-                {comments.map((c, i) => (
-                  <li key={i} className="border-b border-border pb-6 last:border-0 last:pb-0">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shrink-0">
-                        {c.name.charAt(0)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-baseline justify-between">
-                          <div className="font-bold text-base">{c.name}</div>
-                          <div className="text-[11px] text-muted-foreground font-semibold bg-muted px-2 py-0.5 rounded-md">{c.time}</div>
-                        </div>
-                        <p className="text-sm mt-2 text-foreground/90 leading-relaxed">{c.text}</p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
             </div>
           </article>
 
@@ -261,7 +233,13 @@ function ArticlePage() {
             <div>
               <h3 className="font-bold text-lg mb-3 border-b-2 border-primary pb-1">संबंधित ख़बरें</h3>
               <div className="space-y-3">
-                {related.length > 0 ? related.map((r) => <ArticleCard key={`rel-${r.slug}`} a={r} />) : <p className="text-muted-foreground text-sm">अभी कोई खबर नहीं</p>}
+                {/* 👉 BADAAL: बड़े कार्ड हटाकर छोटे और साफ़ कार्ड लगा दिए हैं */}
+                {related.length > 0 ? related.map((r) => (
+                  <Link key={`rel-${r.slug}`} to="/article/$slug" params={{ slug: r.slug }} className="flex gap-3 items-center group bg-card p-2.5 rounded-md border border-border hover:border-primary/50 transition-colors shadow-sm">
+                    <img src={r.image} alt={r.title} className="w-24 h-16 object-cover rounded shrink-0" />
+                    <h4 className="text-sm font-bold leading-snug group-hover:text-primary line-clamp-2 text-ink">{r.title}</h4>
+                  </Link>
+                )) : <p className="text-muted-foreground text-sm">अभी कोई खबर नहीं</p>}
               </div>
             </div>
           </aside>
