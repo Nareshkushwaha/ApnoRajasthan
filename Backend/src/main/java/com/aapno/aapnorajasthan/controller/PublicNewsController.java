@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/news") // 👉 '/public' हटा दिया ताकि React के URL से 100% मैच हो जाए
+@RequestMapping("/api/news") 
 public class PublicNewsController {
 
     @Autowired
@@ -25,10 +25,8 @@ public class PublicNewsController {
         return newsService.getNewsByCategory(category);
     }
 
-    // NAYA ENDPOINT: Specific ID se ek news laane ke liye (React View page ke liye)
     @GetMapping("/{id}")
     public News getNewsById(@PathVariable Long id) {
         return newsService.getNewsById(id);
     }
-    
 }

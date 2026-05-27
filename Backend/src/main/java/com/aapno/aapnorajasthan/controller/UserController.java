@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+// 👉 Yahan pehle se sab sahi tha, WebConfig ise apne aap handle karega
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -40,7 +41,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Email or Password");
     }
 
-    // 👉 NAYA: OTP Send karne ka API
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
         String status = userService.sendOtp(request.get("email"));
@@ -50,7 +50,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(status);
     }
 
-    // 👉 NAYA: Password Reset karne ka API
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
         String status = userService.verifyOtpAndResetPassword(

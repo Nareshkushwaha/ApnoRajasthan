@@ -5,7 +5,7 @@ import com.aapno.aapnorajasthan.repository.StaticPageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:8081") 
+// 👉 FIX: Yahan se @CrossOrigin hata diya gaya hai
 @RestController
 @RequestMapping("/api/pages")
 public class StaticPageController {

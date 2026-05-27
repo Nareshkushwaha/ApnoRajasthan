@@ -8,6 +8,7 @@ public class AdminController {
 
     @GetMapping("/admin")
     public String admin() {
-        return "redirect:http://localhost:5173";
+        // 👉 FIX: localhost hata diya gaya hai.
+        return "redirect:/";
     }
 }

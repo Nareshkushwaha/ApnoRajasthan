@@ -26,13 +26,11 @@ public class AdminNewsController {
     @Autowired
     private NewsService newsService;
 
-    // 👉 YAHAN FIX KIYA HAI: Paged API Endpoint add kiya hai jo React call karega
     @GetMapping("/all/paged")
     public ResponseEntity<Page<News>> getPagedNews(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         
-        // Latest news pehle dikhane ke liye ID ke hisaab se descending sort
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<News> newsPage = newsService.getAllNewsPaged(pageable);
         
@@ -62,7 +60,8 @@ public class AdminNewsController {
 
                 Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
                 
-                String fileUrl = "http://localhost:8085/uploads/" + fileName;
+                // 👉 MAGIC FIX: localhost hata diya!
+                String fileUrl = "/uploads/" + fileName;
                 news.setImageUrl(fileUrl);
             }
             
@@ -80,7 +79,6 @@ public class AdminNewsController {
         return "News Deleted Successfully!";
     }
     
-    // Editor se Image Upload karne ke liye naya endpoint
     @PostMapping(value = "/upload/editor-image")
     public java.util.Map<String, Object> uploadEditorImage(@RequestParam("upload") MultipartFile file) {
         java.util.Map<String, Object> response = new java.util.HashMap<>();
@@ -97,7 +95,8 @@ public class AdminNewsController {
 
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
                 
-                String fileUrl = "http://localhost:8085/uploads/" + fileName;
+                // 👉 MAGIC FIX: Yahan se bhi localhost hata diya!
+                String fileUrl = "/uploads/" + fileName;
 
                 response.put("uploaded", 1);
                 response.put("fileName", fileName);

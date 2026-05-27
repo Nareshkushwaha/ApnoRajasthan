@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-@CrossOrigin(origins = "http://localhost:8081") 
+// 👉 FIX: Yahan se @CrossOrigin hata diya gaya hai
 @RestController
 @RequestMapping("/api/settings")
 public class SiteSettingsController {
@@ -21,7 +21,6 @@ public class SiteSettingsController {
     @Autowired
     private SiteSettingsRepository siteSettingsRepository;
 
-    // Current settings lana
     @GetMapping("/current")
     public SiteSettings getCurrentSettings() {
         return siteSettingsRepository.findById(1L).orElseGet(() -> {
@@ -30,14 +29,12 @@ public class SiteSettingsController {
         });
     }
 
-    // Saari text/boolean settings save karna
     @PostMapping("/update")
     public SiteSettings updateSettings(@RequestBody SiteSettings settings) {
         settings.setId(1L); // Hamesha ID 1 hi rahegi
         return siteSettingsRepository.save(settings);
     }
 
-    // Logo upload karne ke liye alag se API
     @PostMapping("/upload-logo")
     public String uploadLogo(@RequestParam("image") MultipartFile file) {
         try {
@@ -49,7 +46,8 @@ public class SiteSettingsController {
             Path filePath = Paths.get(uploadDir + fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            return "http://localhost:8085/uploads/" + fileName;
+            // 👉 MAGIC FIX: localhost hata diya! Ab ye automatic domain ya IP le lega
+            return "/uploads/" + fileName;
         } catch (IOException e) {
             return "";
         }

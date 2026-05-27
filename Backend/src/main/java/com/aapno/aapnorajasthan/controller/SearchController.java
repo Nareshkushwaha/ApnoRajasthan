@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:8081")
+// 👉 FIX: Yahan se 'localhost:8081' wala @CrossOrigin hata diya
 @RestController
 @RequestMapping("/api/search")
 public class SearchController {

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:8081")
+// 👉 FIX: Yahan se @CrossOrigin hata diya gaya hai
 @RestController
 @RequestMapping("/api/videos")
 public class VideoController {

@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// 👉 FIX 1: CORS Error हटाने के लिए originPatterns का इस्तेमाल किया है
-@CrossOrigin(originPatterns = "*") 
+// 👉 FIX: Yahan se bhi @CrossOrigin hata diya
 @RestController
 @RequestMapping("/api/messages")
 public class MessageController {

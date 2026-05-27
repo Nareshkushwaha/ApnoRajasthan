@@ -7,18 +7,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    
+
+    // 1. Image/Uploads folder ko public karne ke liye (Local + Live dono jagah chalega)
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
     }
 
+    // 2. CORS Setting - Universal Allow (Localhost, Live IP, Domain sabke liye)
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") 
-                // 👉 YAHAN FIX KIYA HAI: Aapki main website ka port 8080 bhi add kar diya!
-                .allowedOrigins("http://localhost:5173", "http://localhost:8080", "http://localhost:8081") 
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+        registry.addMapping("/**")
+                // 👉 MAGIC LINE: 'allowedOriginPatterns("*")' 
+                // "*" ka matlab hai - chahe Localhost ho, IP ho, ya .com Domain ho, sabko allow karo!
+                .allowedOriginPatterns("*") 
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }

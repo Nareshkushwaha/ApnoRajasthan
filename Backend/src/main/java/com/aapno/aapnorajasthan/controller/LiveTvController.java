@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// 👉 YAHAN FIX KIYA HAI: origins ki jagah originPatterns lagaya hai
-@CrossOrigin(originPatterns = "*") 
+// 👉 FIX: @CrossOrigin hata diya kyunki WebConfig ab sab handle kar raha hai
 @RestController
 @RequestMapping("/api/livetv")
 public class LiveTvController {
