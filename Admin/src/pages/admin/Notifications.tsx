@@ -10,7 +10,7 @@ import { Send, Bell, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth"; 
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Notifications() {
   const { user } = useAuth();
@@ -23,7 +23,7 @@ export default function Notifications() {
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/notifications/all`)
+    fetch(`${API_BASE_URL}/api/notifications/all`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setList(data.reverse());
@@ -40,7 +40,7 @@ export default function Notifications() {
     setIsSending(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/notifications/send`, {
+      const res = await fetch(`${API_BASE_URL}/api/notifications/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, message: msg })

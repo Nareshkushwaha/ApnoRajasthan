@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Articles({ draftsOnly = false }: { draftsOnly?: boolean }) {
   const [list, setList] = useState<any[]>([]);
@@ -30,7 +30,7 @@ export default function Articles({ draftsOnly = false }: { draftsOnly?: boolean 
   const fetchNews = async (page: number) => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/admin/news/all/paged?page=${page}&size=${pageSize}`);
+      const response = await fetch(`${API_BASE_URL}/api/admin/news/all/paged?page=${page}&size=${pageSize}`);
       if (response.ok) {
         const rawData = await response.json();
         
@@ -83,7 +83,7 @@ export default function Articles({ draftsOnly = false }: { draftsOnly?: boolean 
     if(!window.confirm("Kya aap sach me is news ko delete karna chahte hain?")) return;
     
     try {
-      const response = await fetch(`${API_URL}/api/admin/news/delete/${id}`, { 
+      const response = await fetch(`${API_BASE_URL}/api/admin/news/delete/${id}`, { 
         method: "DELETE" 
       });
       

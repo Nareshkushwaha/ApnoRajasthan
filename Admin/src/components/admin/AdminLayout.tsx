@@ -2,6 +2,7 @@ import { Outlet, Navigate, useLocation, Link, useNavigate } from "react-router-d
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "./AdminSidebar";
 import { useAuth } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 import { Bell, Search, Sun, Moon, LogOut, User as UserIcon, Settings as SettingsIcon, CheckCheck, Camera, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,8 +25,6 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
-
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
 
 export default function AdminLayout() {
   const { user, logout, updateUser } = useAuth();
@@ -76,7 +75,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     if (user) {
-      fetch(`${API_URL}/api/notifications/all`)
+      fetch(`${API_BASE_URL}/api/notifications/all`)
         .then(res => res.json())
         .then(data => {
           if (Array.isArray(data)) {

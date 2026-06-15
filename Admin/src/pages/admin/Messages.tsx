@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Mail, MailOpen, Reply, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Messages() {
   const [list, setList] = useState<any[]>([]);
@@ -21,7 +21,7 @@ export default function Messages() {
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/messages/all`);
+      const res = await fetch(`${API_BASE_URL}/api/messages/all`);
       const data = await res.json();
       if (Array.isArray(data)) {
         const sorted = data.reverse(); 
@@ -39,7 +39,7 @@ export default function Messages() {
     setActive(m);
     if (!m.read) {
         try {
-            await fetch(`${API_URL}/api/messages/read/${m.id}`, { method: "PUT" });
+            await fetch(`${API_BASE_URL}/api/messages/read/${m.id}`, { method: "PUT" });
             setList(list.map(x => x.id === m.id ? { ...x, read: true } : x));
         } catch (err) {
             console.error("Read status update failed");

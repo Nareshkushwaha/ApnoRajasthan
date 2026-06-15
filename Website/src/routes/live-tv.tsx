@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { PageHero } from "@/components/news-ui";
 import { Play, Tv, Loader2, Radio } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export const Route = createFileRoute("/live-tv")({
   head: () => ({
@@ -41,26 +41,26 @@ function LiveTvPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const settingsRes = await fetch(`${API_URL}/api/livetv/current`);
+        const settingsRes = await fetch(`${API_BASE_URL}/api/livetv/current`);
         if (settingsRes.ok) {
           const settings = await settingsRes.json();
           setLiveData(settings);
         }
 
-        const newsRes = await fetch(`${API_URL}/api/news/all`);
+        const newsRes = await fetch(`${API_BASE_URL}/api/news/all`);
         if (newsRes.ok) {
           const news = await newsRes.json();
           setHeadlines(Array.isArray(news) ? news.slice(0, 5) : []);
         }
 
-        const videoRes = await fetch(`${API_URL}/api/videos/all`);
+        const videoRes = await fetch(`${API_BASE_URL}/api/videos/all`);
         if (videoRes.ok) {
           const videos = await videoRes.json();
           if (Array.isArray(videos)) {
             const formattedVideos = videos.slice(0, 4).map((v: any) => {
               const rawUrl = v.thumb || v.thumbnail || v.imageUrl;
               const imgSrc = rawUrl 
-                ? (rawUrl.startsWith('http') ? rawUrl : `${API_URL}/uploads/${rawUrl}`) 
+                ? (rawUrl.startsWith('http') ? rawUrl : `${API_BASE_URL}/uploads/${rawUrl}`) 
                 : "https://picsum.photos/400/225"; 
               return { ...v, thumbnail: imgSrc };
             });
@@ -68,7 +68,7 @@ function LiveTvPage() {
           }
         }
 
-        const scheduleRes = await fetch(`${API_URL}/api/livetv/schedule/all`);
+        const scheduleRes = await fetch(`${API_BASE_URL}/api/livetv/schedule/all`);
         if (scheduleRes.ok) {
           const sched = await scheduleRes.json();
           setSchedule(Array.isArray(sched) ? sched : []);

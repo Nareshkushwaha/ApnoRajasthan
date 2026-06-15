@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Pencil, Eye, Calendar, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function ArticleView() {
   const { id } = useParams();
@@ -15,7 +16,7 @@ export default function ArticleView() {
   useEffect(() => {
     const fetchArticleData = async () => {
       try {
-        const response = await fetch(`http://localhost:8085/api/public/news/${id}`);
+        const response = await fetch(`${API_BASE_URL}/api/public/news/${id}`);
         if (response.ok) {
           const data = await response.json();
           setArticle(data);

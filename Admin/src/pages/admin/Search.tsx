@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Search as SearchIcon, User, FileText, Video, Image as ImageIcon, MessageSquare } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -16,7 +16,7 @@ export default function Search() {
   useEffect(() => {
     if (query) {
       setLoading(true);
-      fetch(`${API_URL}/api/search?q=${encodeURIComponent(query)}`)
+      fetch(`${API_BASE_URL}/api/search?q=${encodeURIComponent(query)}`)
         .then(res => res.json())
         .then(data => {
           setResults(data);

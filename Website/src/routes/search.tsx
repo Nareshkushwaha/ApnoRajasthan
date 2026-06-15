@@ -7,7 +7,7 @@ import { CATEGORY_LABELS, type Category } from "@/data/news";
 import { ArticleListItem, PageHero } from "@/components/news-ui";
 import { Search, Loader2, SearchX } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 const schema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -38,7 +38,7 @@ function SearchPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_URL}/api/news/all`)
+    fetch(`${API_BASE_URL}/api/news/all`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {

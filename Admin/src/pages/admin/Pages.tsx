@@ -8,7 +8,7 @@ import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 
 // 👉 Base URL .env se
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Pages() {
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ export default function Pages() {
 
   // 1. Backend se data load karna
   useEffect(() => {
-    fetch(`${API_URL}/api/pages/current`)
+    fetch(`${API_BASE_URL}/api/pages/current`)
       .then(res => res.json())
       .then(dbData => {
         if (dbData) {
@@ -50,7 +50,7 @@ export default function Pages() {
   const save = async (pageName: string) => {
     setSaving(true);
     try {
-      const res = await fetch(`${API_URL}/api/pages/update`, {
+      const res = await fetch(`${API_BASE_URL}/api/pages/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)

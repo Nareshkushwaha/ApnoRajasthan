@@ -9,7 +9,7 @@ import {
 import { ArticleCard, ArticleListItem, AdSlot, PageHero, SectionHeader } from "@/components/news-ui";
 import { Loader2 } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 type Layout = "lead" | "magazine" | "grid" | "regions" | "scoreboard" | "posters" | "reviews" | "table";
 
@@ -27,7 +27,7 @@ export function CategoryPage({ category, layout, kicker, subtitle, extras }: Pro
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_URL}/api/news/all`)
+    fetch(`${API_BASE_URL}/api/news/all`)
       .then(res => {
         if (!res.ok) throw new Error("Backend ne data nahi diya!");
         return res.json();

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Mail, Lock, KeyRound, Loader2 } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function ForgotPassword() {
     if (!email) return toast.error("Please enter email");
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/users/forgot-password`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -44,7 +44,7 @@ export default function ForgotPassword() {
     if (!otp || !newPassword) return toast.error("Please enter OTP and New Password");
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/users/reset-password`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, newPassword }),

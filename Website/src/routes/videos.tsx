@@ -5,7 +5,7 @@ import { PageHero } from "@/components/news-ui";
 import { Play, X, Loader2, Facebook, Twitter, Linkedin, Link2 } from "lucide-react";
 import { toast } from "sonner"; // Notification ke liye
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
@@ -33,7 +33,7 @@ function VideosPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/videos/all`)
+    fetch(`${API_BASE_URL}/api/videos/all`)
       .then((res) => {
         if (!res.ok) throw new Error("Video data fetch fail");
         return res.json();

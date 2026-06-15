@@ -3,7 +3,7 @@ import { PageHero } from "@/components/news-ui";
 import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -29,7 +29,7 @@ function AboutPage() {
 
       // 1. Pehle Page Content fetch karenge
       try {
-        const pageRes = await fetch(`${API_URL}/api/pages/current`);
+        const pageRes = await fetch(`${API_BASE_URL}/api/pages/current`);
         if (pageRes.ok) {
           const pageData = await pageRes.json();
           if (pageData && pageData.aboutContent) {
@@ -42,7 +42,7 @@ function AboutPage() {
 
       // 2. Phir Users data fetch karenge (Agar upar wala fail bhi hua, toh ye chalega)
       try {
-        const userRes = await fetch(`${API_URL}/api/users/all`);
+        const userRes = await fetch(`${API_BASE_URL}/api/users/all`);
         if (userRes.ok) {
           const usersData = await userRes.json();
           

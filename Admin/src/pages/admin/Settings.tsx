@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Upload, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Settings() {
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ export default function Settings() {
 
   // Backend se settings lana
   useEffect(() => {
-    fetch(`${API_URL}/api/settings/current`)
+    fetch(`${API_BASE_URL}/api/settings/current`)
       .then(res => res.json())
       .then(data => {
         if (data) {
@@ -52,7 +52,7 @@ export default function Settings() {
   const saveSettings = async (tabName: string) => {
     setSaving(true);
     try {
-      const res = await fetch(`${API_URL}/api/settings/update`, {
+      const res = await fetch(`${API_BASE_URL}/api/settings/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings)
@@ -79,7 +79,7 @@ export default function Settings() {
     formData.append("image", file);
 
     try {
-      const res = await fetch(`${API_URL}/api/settings/upload-logo`, {
+      const res = await fetch(`${API_BASE_URL}/api/settings/upload-logo`, {
         method: "POST",
         body: formData
       });

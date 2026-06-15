@@ -11,7 +11,7 @@ import { Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 // 👉 NAYA BADAAL: Base URL ko .env se utha rahe hain. Agar .env na mile toh localhost uthayega
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export function CategoriesList() {
   const [list, setList] = useState<any[]>([]);
@@ -19,7 +19,7 @@ export function CategoriesList() {
 
   // 👉 1. Backend se saari categories fetch karna
   useEffect(() => {
-    fetch(`${API_URL}/api/categories/all`)
+    fetch(`${API_BASE_URL}/api/categories/all`)
       .then(res => res.json())
       .then(data => {
         // Yahan check kar rahe hain ki data sacchi mein ek Array (List) hai ya nahi
@@ -43,7 +43,7 @@ export function CategoriesList() {
   const del = async (id: number) => { 
     if(!window.confirm("Kya aap sach me is category ko delete karna chahte hain?")) return;
     try {
-      const res = await fetch(`${API_URL}/api/categories/delete/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE_URL}/api/categories/delete/${id}`, { method: "DELETE" });
       if(res.ok) {
         setList(list.filter(c => c.id !== id)); 
         toast.success("Category deleted"); 
@@ -93,7 +93,7 @@ export function CategoryForm({ mode }: { mode: "new" | "edit" }) {
   // 👉 3. Edit mode me purani category ka data laana
   useEffect(() => {
     if(mode === "edit" && id) {
-      fetch(`${API_URL}/api/categories/all`)
+      fetch(`${API_BASE_URL}/api/categories/all`)
         .then(res => res.json())
         .then(data => {
           if (Array.isArray(data)) {
@@ -117,7 +117,7 @@ export function CategoryForm({ mode }: { mode: "new" | "edit" }) {
     if(mode === "edit" && id) payload.id = Number(id); // Edit ke time ID bhej rahe hain
 
     try {
-      const res = await fetch(`${API_URL}/api/categories/add`, {
+      const res = await fetch(`${API_BASE_URL}/api/categories/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

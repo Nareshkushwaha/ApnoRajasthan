@@ -26,8 +26,9 @@ import Settings from "./pages/admin/Settings";
 import Pages from "./pages/admin/Pages";
 import Search from "./pages/admin/Search"; 
 
+import { API_BASE_URL } from "@/lib/api";
+
 const queryClient = new QueryClient();
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
 
 const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
   const { user } = useAuth();
@@ -58,7 +59,7 @@ const applyThemeToDOM = (themeData: any) => {
 const App = () => {
 
   useEffect(() => {
-    fetch(`${API_URL}/api/settings/current`)
+    fetch(`${API_BASE_URL}/api/settings/current`)
       .then(res => res.json())
       .then(data => {
         if (data) {

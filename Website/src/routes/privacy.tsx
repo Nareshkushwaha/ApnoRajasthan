@@ -3,7 +3,7 @@ import { PageHero } from "@/components/news-ui";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -23,7 +23,7 @@ function PrivacyPage() {
 
   // 👉 Admin panel ka data database se la rahe hain
   useEffect(() => {
-    fetch(`${API_URL}/api/pages/current`)
+    fetch(`${API_BASE_URL}/api/pages/current`)
       .then(res => res.json())
       .then(data => {
         if (data && data.privacyContent) setContent(data.privacyContent);

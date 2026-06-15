@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Newspaper, Lock, User as UserIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Login() {
   const { login } = useAuth();
@@ -27,7 +27,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-        const response = await fetch(`${API_URL}/api/users/login`, {
+        const response = await fetch(`${API_BASE_URL}/api/users/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email, password: password })

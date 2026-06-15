@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { ArticleCard, AdSlot, PageHero } from "@/components/news-ui";
 import { Loader2 } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export const Route = createFileRoute("/rajasthan")({
   loader: async () => {
     try {
-      const res = await fetch(`${API_URL}/api/news/all`);
+      const res = await fetch(`${API_BASE_URL}/api/news/all`);
       if (!res.ok) return { firstImage: null };
       const data = await res.json();
       const rajasthanNews = data.find((n: any) => n.category && n.category.trim().toLowerCase() === "rajasthan");
@@ -53,7 +53,7 @@ function RajasthanPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_URL}/api/news/all`)
+    fetch(`${API_BASE_URL}/api/news/all`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

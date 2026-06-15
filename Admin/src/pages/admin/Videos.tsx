@@ -12,7 +12,7 @@ import { Plus, Trash2, ArrowLeft, Play, FolderTree, Pencil } from "lucide-react"
 import { toast } from "sonner";
 
 // 👉 Base URL yahan set kar diya hai
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 // 1. VIDEOS LIST COMPONENT
 export function VideosList() {
@@ -20,7 +20,7 @@ export function VideosList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/videos/all`)
+    fetch(`${API_BASE_URL}/api/videos/all`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setList(data);
@@ -35,7 +35,7 @@ export function VideosList() {
   const remove = async (id: number) => {
     if(!window.confirm("Delete karna chahte hain?")) return;
     try {
-      const res = await fetch(`${API_URL}/api/videos/delete/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE_URL}/api/videos/delete/${id}`, { method: "DELETE" });
       if (res.ok) {
         setList(list.filter(x => x.id !== id));
         toast.success("Video deleted");
@@ -116,14 +116,14 @@ export function VideoForm({ mode }: { mode: "new" | "edit" }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/categories/all`)
+    fetch(`${API_BASE_URL}/api/categories/all`)
       .then(res => res.json())
       .then(data => {
         if(Array.isArray(data)) setDbCategories(data);
       });
 
     if (mode === "edit" && id) {
-      fetch(`${API_URL}/api/videos/${id}`)
+      fetch(`${API_BASE_URL}/api/videos/${id}`)
         .then(res => res.json())
         .then(data => {
           setTitle(data.title);
@@ -149,7 +149,7 @@ export function VideoForm({ mode }: { mode: "new" | "edit" }) {
     if (mode === "edit" && id) payload.id = Number(id);
 
     try {
-      const res = await fetch(`${API_URL}/api/videos/add`, {
+      const res = await fetch(`${API_BASE_URL}/api/videos/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -202,7 +202,7 @@ export function VideoCategories() {
   const [cats, setCats] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/categories/all`)
+    fetch(`${API_BASE_URL}/api/categories/all`)
       .then(res => res.json())
       .then(data => { if(Array.isArray(data)) setCats(data); });
   }, []);

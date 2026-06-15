@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tv, Radio, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function LiveTV() {
   const [url, setUrl] = useState("");
@@ -20,7 +20,7 @@ export default function LiveTV() {
 
   // 1. Backend se current Live TV setting lana
   useEffect(() => {
-    fetch(`${API_URL}/api/livetv/current`)
+    fetch(`${API_BASE_URL}/api/livetv/current`)
       .then(res => res.json())
       .then(data => {
         setUrl(data.streamUrl || "");
@@ -45,7 +45,7 @@ export default function LiveTV() {
     };
 
     try {
-      const res = await fetch(`${API_URL}/api/livetv/update`, {
+      const res = await fetch(`${API_BASE_URL}/api/livetv/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

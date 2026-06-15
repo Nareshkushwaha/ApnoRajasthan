@@ -4,7 +4,7 @@ import { articles } from "@/data/news";
 import { ArticleCard, ArticleListItem, AdSlot, PageHero } from "@/components/news-ui";
 import { Loader2, FileText } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export const Route = createFileRoute("/technology")({
   head: () => ({
@@ -25,7 +25,7 @@ function TechnologyPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_URL}/api/news/all`)
+    fetch(`${API_BASE_URL}/api/news/all`)
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {

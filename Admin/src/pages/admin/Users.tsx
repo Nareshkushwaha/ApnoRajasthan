@@ -12,7 +12,7 @@ import { Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 // 1. USERS LIST COMPONENT
 export function UsersList() {
@@ -20,7 +20,7 @@ export function UsersList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/users/all`)
+    fetch(`${API_BASE_URL}/api/users/all`)
       .then(res => res.json())
       .then(data => {
         // 👉 YAHAN BHI SMART EXTRACTION LAGAYA HAI
@@ -44,7 +44,7 @@ export function UsersList() {
   const del = async (id: number) => { 
     if(!window.confirm("Kya aap sach me is user ko delete karna chahte hain?")) return;
     try {
-      const res = await fetch(`${API_URL}/api/users/delete/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE_URL}/api/users/delete/${id}`, { method: "DELETE" });
       if(res.ok) {
         setList(list.filter(u => u.id !== id)); 
         toast.success("User removed"); 
@@ -95,7 +95,7 @@ export function UserForm({ mode }: { mode: "new" | "edit" }) {
 
   useEffect(() => {
     if (mode === "edit" && id) {
-      fetch(`${API_URL}/api/users/${id}`)
+      fetch(`${API_BASE_URL}/api/users/${id}`)
         .then(res => res.json())
         .then(data => {
           setName(data.name || "");
@@ -115,7 +115,7 @@ export function UserForm({ mode }: { mode: "new" | "edit" }) {
     if (mode === "edit" && id) payload.id = Number(id);
 
     try {
-      const res = await fetch(`${API_URL}/api/users/add`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

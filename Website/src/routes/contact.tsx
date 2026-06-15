@@ -3,7 +3,7 @@ import { useState } from "react";
 import { MapPin, Phone, Mail, Clock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export const Route = createFileRoute("/contact")({
   component: ContactPage,
@@ -23,7 +23,7 @@ function ContactPage() {
     setLoading(true);
     try {
       // 👉 BADAAL: URL ko update kar diya hai backend ke hisaab se
-      const res = await fetch(`${API_URL}/api/messages/add`, {
+      const res = await fetch(`${API_BASE_URL}/api/messages/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

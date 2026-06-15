@@ -5,12 +5,12 @@ import { Facebook, Twitter, Linkedin, Link2, Clock, MessageCircle, Send } from "
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export const Route = createFileRoute("/article/$slug")({
   loader: async ({ params }) => {
     try {
-      const res = await fetch(`${API_URL}/api/news/${params.slug}`);
+      const res = await fetch(`${API_BASE_URL}/api/news/${params.slug}`);
       if (!res.ok) throw notFound();
       const data = await res.json();
       
@@ -64,7 +64,7 @@ function ArticlePage() {
   const [commentText, setCommentText] = useState("");
 
   useEffect(() => {
-    fetch(`${API_URL}/api/news/all`)
+    fetch(`${API_BASE_URL}/api/news/all`)
       .then(res => res.json())
       .then(data => {
         const formatted = data.map((n: any) => ({

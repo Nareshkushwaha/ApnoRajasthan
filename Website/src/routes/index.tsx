@@ -4,7 +4,7 @@ import { CATEGORY_LABELS, CATEGORY_PATH } from "@/data/news";
 import { ArticleCard, ArticleListItem, SectionHeader } from "@/components/news-ui";
 import { ChevronLeft, ChevronRight, Play, Loader2, FileText } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,7 +22,7 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/news/all`)
+    fetch(`${API_BASE_URL}/api/news/all`)
       .then(res => res.json())
       .then(data => {
         const formattedNews = data.map((n: any) => ({
@@ -38,7 +38,7 @@ function HomePage() {
       })
       .catch(err => console.error("News load fail:", err));
 
-    fetch(`${API_URL}/api/videos/all`)
+    fetch(`${API_BASE_URL}/api/videos/all`)
       .then(res => res.json())
       .then(data => {
         const formattedVideos = data.map((v: any) => ({

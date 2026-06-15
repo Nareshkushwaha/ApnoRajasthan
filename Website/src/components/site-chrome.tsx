@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { CATEGORY_LABELS, CATEGORY_PATH } from "@/data/news";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 const NAV: { label: string; to: string; icon: any }[] = [
   { label: "होम", to: "/", icon: Home },
@@ -179,7 +179,7 @@ function BreakingTicker() {
   const [items, setItems] = useState<{ title: string, slug: string }[]>([{ title: "ताज़ा ख़बरें लोड हो रही हैं...", slug: "" }]);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/news/all`)
+    fetch(`${API_BASE_URL}/api/news/all`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {

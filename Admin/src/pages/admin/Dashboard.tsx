@@ -8,7 +8,7 @@ import { Newspaper, FolderTree, Users, FileEdit, CheckCircle2, Plus, ArrowUpRigh
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Dashboard() {
   const [news, setNews] = useState<any[]>([]);
@@ -21,9 +21,9 @@ export default function Dashboard() {
       try {
         const [newsRes, catRes, userRes] = await Promise.all([
           // 👉 NAYA BADAAL: Yahan se '/public' hata diya hai. Ab yeh bilkul sahi API par jayega!
-          fetch(`${API_URL}/api/news/all`),
-          fetch(`${API_URL}/api/categories/all`),
-          fetch(`${API_URL}/api/users/all`)
+          fetch(`${API_BASE_URL}/api/news/all`),
+          fetch(`${API_BASE_URL}/api/categories/all`),
+          fetch(`${API_BASE_URL}/api/users/all`)
         ]);
 
         if (newsRes.ok) {

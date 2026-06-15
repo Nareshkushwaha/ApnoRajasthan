@@ -14,7 +14,7 @@ import { useAuth } from "@/lib/auth"; // 👉 NAYA: User check karne ke liye
 
 import { CKEditor } from 'ckeditor4-react';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8085";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
   const { id } = useParams();
@@ -48,10 +48,10 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
   const [showTools, setShowTools] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/categories/all`).then(res => res.json()).then(data => { if(Array.isArray(data)) setDbCategories(data); }).catch(() => console.log("Category load fail"));
+    fetch(`${API_BASE_URL}/api/categories/all`).then(res => res.json()).then(data => { if(Array.isArray(data)) setDbCategories(data); }).catch(() => console.log("Category load fail"));
 
     if (mode === "edit" && id) {
-      fetch(`${API_URL}/api/news/${id}`)
+      fetch(`${API_BASE_URL}/api/news/${id}`)
         .then(res => res.json())
         .then(data => {
           setTitle(data.title || "");
@@ -97,7 +97,7 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
     if (selectedImage) formData.append("image", selectedImage);
 
     try {
-      const response = await fetch(`${API_URL}/api/admin/news/add`, { method: "POST", body: formData });
+      const response = await fetch(`${API_BASE_URL}/api/admin/news/add`, { method: "POST", body: formData });
       if (response.ok) {
         toast.success(publish ? "News published! 🎉" : "Draft saved");
         nav("/admin/articles");
@@ -235,7 +235,7 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
                   config={{
                     height: 400,
                     versionCheck: false, 
-                    filebrowserUploadUrl: `${API_URL}/api/admin/upload/editor-image`
+                    filebrowserUploadUrl: `${API_BASE_URL}/api/admin/upload/editor-image`
                   }}
                 />
               </div>
