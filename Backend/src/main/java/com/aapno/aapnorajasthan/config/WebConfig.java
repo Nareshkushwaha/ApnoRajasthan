@@ -1,7 +1,9 @@
 package com.aapno.aapnorajasthan.config;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -18,18 +20,22 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:uploads/");
     }
 
-    // 2. 👉 Naya aur Powerful CORS Filter (Jo Spring Security ko bhi bypass karega)
+    // 2. 👉 BRAHMASTRA CORS FILTER (Jo Spring Security se bhi pehle chalega)
     @Bean
-    public CorsFilter corsFilter() {
+    public FilterRegistrationBean<CorsFilter> customCorsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
         config.setAllowCredentials(true);
         config.addAllowedOriginPattern("*"); // Sab allow karega
         config.addAllowedHeader("*");        // Saare headers allow
-        config.addAllowedMethod("*");        // GET, POST, PUT, DELETE sab allow
+        config.addAllowedMethod("*");        // GET, POST, PUT, DELETE, OPTIONS sab allow
         
         source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        
+        // MAGIC LINE: Ise sabse high priority de rahe hain
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE); 
+        return bean;
     }
 }
