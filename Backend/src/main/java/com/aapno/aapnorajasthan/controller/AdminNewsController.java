@@ -2,6 +2,7 @@ package com.aapno.aapnorajasthan.controller;
 
 import com.aapno.aapnorajasthan.entity.News;
 import com.aapno.aapnorajasthan.service.NewsService;
+import com.aapno.aapnorajasthan.service.R2StorageService; // R2 Service import ki hai
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,13 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.DeserializationFeature; 
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 
 @RestController
 @RequestMapping("/api/admin/news")
@@ -25,6 +20,10 @@ public class AdminNewsController {
 
     @Autowired
     private NewsService newsService;
+
+    // R2 Storage Service ko inject kiya
+    @Autowired
+    private R2StorageService r2StorageService;
 
     @GetMapping("/all/paged")
     public ResponseEntity<Page<News>> getPagedNews(
@@ -47,21 +46,9 @@ public class AdminNewsController {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             News news = objectMapper.readValue(newsJson, News.class);
             
+            // Image Cloudflare R2 me upload hogi
             if (imageFile != null && !imageFile.isEmpty()) {
-                String uploadDir = "uploads/";
-                File directory = new File(uploadDir);
-                
-                if (!directory.exists()) {
-                    directory.mkdir();
-                }
-
-                String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-                Path filePath = Paths.get(uploadDir + fileName);
-
-                Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                
-                // 👉 MAGIC FIX: localhost hata diya!
-                String fileUrl = "/uploads/" + fileName;
+                String fileUrl = r2StorageService.uploadFile(imageFile);
                 news.setImageUrl(fileUrl);
             }
             
@@ -83,24 +70,13 @@ public class AdminNewsController {
     public java.util.Map<String, Object> uploadEditorImage(@RequestParam("upload") MultipartFile file) {
         java.util.Map<String, Object> response = new java.util.HashMap<>();
         try {
+            // Editor ki image bhi Cloudflare R2 me upload hogi
             if (file != null && !file.isEmpty()) {
-                String uploadDir = "uploads/";
-                File directory = new File(uploadDir);
-                if (!directory.exists()) {
-                    directory.mkdir();
-                }
-
-                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                Path filePath = Paths.get(uploadDir + fileName);
-
-                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                
-                // 👉 MAGIC FIX: Yahan se bhi localhost hata diya!
-                String fileUrl = "/uploads/" + fileName;
+                String fileUrl = r2StorageService.uploadFile(file);
 
                 response.put("uploaded", 1);
-                response.put("fileName", fileName);
-                response.put("url", fileUrl);
+                response.put("fileName", file.getOriginalFilename());
+                response.put("url", fileUrl); // R2 ka public URL yaha pass hoga
                 return response;
             }
         } catch (Exception e) {
