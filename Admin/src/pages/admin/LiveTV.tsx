@@ -10,6 +10,14 @@ import { toast } from "sonner";
 
 import { API_BASE_URL } from "@/lib/api";
 
+// 👉 JADOO YAHAN HAI: YouTube URL se ID nikalne ka function add kiya
+function getYouTubeId(url: string) {
+  if (!url) return null;
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
 export default function LiveTV() {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
@@ -67,6 +75,9 @@ export default function LiveTV() {
     return <div className="flex h-96 items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
   }
 
+  // 👉 YouTube ID nikalo link se
+  const videoId = getYouTubeId(url);
+
   return (
     <div>
       <PageHeader title="Live TV Control" description="लाइव स्ट्रीम प्रबंधन" />
@@ -75,12 +86,26 @@ export default function LiveTV() {
         {/* Left Side: Preview Area */}
         <Card className="lg:col-span-2 shadow-card overflow-hidden border-0">
           <div className="relative aspect-video bg-black">
-            <img src="https://picsum.photos/seed/livetv/1280/720" alt="preview" className={`h-full w-full object-cover transition-opacity duration-500 ${live ? 'opacity-80' : 'opacity-30 grayscale'}`} />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className={`rounded-full p-6 shadow-elegant transition-colors duration-300 ${live ? 'bg-primary/90' : 'bg-muted/80'}`}>
-                <Tv className={`h-12 w-12 ${live ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
-              </div>
-            </div>
+            
+            {/* 👉 FIX: Agar Video ID mil gayi, to asali YouTube player dikhao, warna purani photo */}
+            {videoId ? (
+              <iframe 
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=0&mute=1`}
+                title="Live TV Preview"
+                className={`h-full w-full object-cover transition-opacity duration-500 ${live ? 'opacity-100' : 'opacity-40 grayscale'}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            ) : (
+              <img 
+                src="https://picsum.photos/seed/livetv/1280/720" 
+                alt="preview" 
+                className={`h-full w-full object-cover transition-opacity duration-500 ${live ? 'opacity-80' : 'opacity-30 grayscale'}`} 
+              />
+            )}
+
+            {/* Beech ka TV Icon hata diya taaki video saaf dikhe, bas status dikhega */}
+            
             {live && (
               <div className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-destructive px-3 py-1 text-xs font-bold text-destructive-foreground shadow-sm">
                 <Radio className="h-3 w-3 animate-pulse" /> LIVE

@@ -35,7 +35,8 @@ function PoliticsPage() {
         }
 
         const formattedNews = data.map((n: any) => ({
-          slug: n.id.toString(),
+          // 👉 MAGIC FIX YAHAN HAI: Ab ye ID ki jagah English naam (Slug) bhejega
+          slug: n.urlSlug && n.urlSlug.trim() !== "" ? n.urlSlug : n.id.toString(),
           title: n.title,
           // HTML Tags साफ़ कर दिए
           excerpt: n.content ? n.content.replace(/<[^>]+>/g, '').substring(0, 120) + "..." : "",

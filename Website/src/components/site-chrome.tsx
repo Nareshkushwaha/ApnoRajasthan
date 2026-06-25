@@ -45,7 +45,6 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 bg-background border-b border-border shadow-sm">
-      {/* Top bar */}
       <div className="bg-ink text-primary-foreground text-xs">
         <div className="container mx-auto flex items-center justify-between px-4 py-1.5">
           <span className="hidden sm:inline opacity-80">{today}</span>
@@ -55,16 +54,15 @@ export function SiteHeader() {
             <Link to="/contact" className="hover:text-primary transition-colors">संपर्क</Link>
             
             <div className="hidden md:flex items-center gap-2.5 ml-2 pl-3 border-l border-white/20">
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="hover:text-primary transition-colors"><Facebook size={14} /></a>
-              <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter" className="hover:text-primary transition-colors"><Twitter size={14} /></a>
-              <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube" className="hover:text-primary transition-colors"><Youtube size={14} /></a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-primary transition-colors"><Instagram size={14} /></a>
+              <a href="https://www.facebook.com/Apnorajasthan01/?rdid=QjEEc3IwYdwkXZSm" target="_blank" rel="noreferrer" aria-label="Facebook" className="hover:text-primary transition-colors"><Facebook size={14} /></a>
+              <a href="https://x.com/AapnoRajasthaan" target="_blank" rel="noreferrer" aria-label="Twitter" className="hover:text-primary transition-colors"><Twitter size={14} /></a>
+              <a href="https://www.youtube.com/channel/UCBp889JG9RoSxfbiM5a8GoA" target="_blank" rel="noreferrer" aria-label="YouTube" className="hover:text-primary transition-colors"><Youtube size={14} /></a>
+              <a href="https://www.instagram.com/aapno.rajasthan12/" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-primary transition-colors"><Instagram size={14} /></a>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Logo + search */}
       <div className="container mx-auto px-4 py-3 flex items-center gap-4">
         <Link to="/" className="flex items-center gap-2 shrink-0">
           <div className="bg-primary text-primary-foreground font-extrabold text-2xl px-3 py-1.5 rounded-md tracking-tight">
@@ -113,7 +111,6 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="hidden md:block bg-ink text-primary-foreground">
         <div className="container mx-auto px-4 flex items-center gap-1 overflow-x-auto">
           {NAV.map((item) => {
@@ -135,7 +132,6 @@ export function SiteHeader() {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
       {mobile && (
         <div className="md:hidden border-t border-border bg-background shadow-lg absolute w-full z-50">
           <form onSubmit={submit} className="p-3 border-b border-border flex gap-2">
@@ -169,7 +165,6 @@ export function SiteHeader() {
         </div>
       )}
 
-      {/* Breaking ticker */}
       <BreakingTicker />
     </header>
   );
@@ -183,17 +178,29 @@ function BreakingTicker() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          // 👉 FILTER LOGIC: Sirf isBreaking true wali khabren hi filter hongi
-          const breakingNewsOnly = data.filter((n: any) => n.isBreaking === true || n.isBreaking === "true");
+          const now = new Date(); 
           
-          if (breakingNewsOnly.length > 0) {
-            const latestItems = breakingNewsOnly.slice(0, 5).map((n: any) => ({
+          const validBreakingNews = data.filter((n: any) => {
+            if (n.status !== "Published") return false;
+            
+            if (n.publishType === "schedule" && n.scheduleTime) {
+              const scheduledDate = new Date(n.scheduleTime);
+              if (scheduledDate > now) {
+                return false; 
+              }
+            }
+            
+            return n.isBreaking === true || n.isBreaking === "true" || n.isBreaking === 1;
+          });
+          
+          if (validBreakingNews.length > 0) {
+            const latestItems = validBreakingNews.slice(0, 5).map((n: any) => ({
               title: n.title,
-              slug: n.urlSlug || n.id.toString()
+              // 👉 YAHAN WAPAS SLUG SET KIYA HAI (Agar slug khali ho, tabhi ID jayegi)
+              slug: n.urlSlug && n.urlSlug.trim() !== "" ? n.urlSlug : n.id.toString() 
             }));
             setItems(latestItems);
           } else {
-            // Agar database mein ek bhi khabar breaking nahi hai
             setItems([{ title: "आज की कोई ब्रेकिंग न्यूज़ नहीं है", slug: "" }]);
           }
         }
@@ -242,10 +249,10 @@ export function SiteFooter() {
             राजस्थान, देश और दुनिया की हर बड़ी ख़बर — सबसे पहले, सबसे सटीक। अपनो राजस्थान के साथ जुड़े रहिए।
           </p>
           <div className="flex gap-4 mt-6">
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="hover:text-primary transition-colors hover:-translate-y-1 transform duration-200"><Facebook size={20} /></a>
-            <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter" className="hover:text-primary transition-colors hover:-translate-y-1 transform duration-200"><Twitter size={20} /></a>
-            <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube" className="hover:text-primary transition-colors hover:-translate-y-1 transform duration-200"><Youtube size={20} /></a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-primary transition-colors hover:-translate-y-1 transform duration-200"><Instagram size={20} /></a>
+            <a href="https://www.facebook.com/Apnorajasthan01/?rdid=QjEEc3IwYdwkXZSm" target="_blank" rel="noreferrer" aria-label="Facebook" className="hover:text-primary transition-colors hover:-translate-y-1 transform duration-200"><Facebook size={20} /></a>
+            <a href="https://x.com/AapnoRajasthaan" target="_blank" rel="noreferrer" aria-label="Twitter" className="hover:text-primary transition-colors hover:-translate-y-1 transform duration-200"><Twitter size={20} /></a>
+            <a href="https://www.youtube.com/channel/UCBp889JG9RoSxfbiM5a8GoA" target="_blank" rel="noreferrer" aria-label="YouTube" className="hover:text-primary transition-colors hover:-translate-y-1 transform duration-200"><Youtube size={20} /></a>
+            <a href="https://www.instagram.com/aapno.rajasthan12/" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-primary transition-colors hover:-translate-y-1 transform duration-200"><Instagram size={20} /></a>
           </div>
         </div>
 

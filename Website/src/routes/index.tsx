@@ -27,7 +27,8 @@ function HomePage() {
       .then(data => {
         const formattedNews = data.map((n: any) => ({
           ...n,
-          slug: String(n.id), 
+          // 👉 MAGIC FIX: Yahan ID ki jagah Slug pass kar diya
+          slug: n.urlSlug && n.urlSlug.trim() !== "" ? n.urlSlug : n.id.toString(), 
           image: n.imageUrl || "https://picsum.photos/800/400",
           excerpt: n.content ? n.content.replace(/<[^>]+>/g, '').substring(0, 120) + "..." : "", 
           category: n.category ? n.category.trim().toLowerCase() : 'rajasthan',
@@ -67,7 +68,7 @@ function HomePage() {
 
   // Anya Khabar (Jo main categories me nahi hain)
   const mainCategories = ["rajasthan", "sports", "entertainment", "technology", "jobs"];
-  const anyaNews = news.filter(n => !mainCategories.includes(n.category)).slice(0, 12); // Isko 12 kar diya taaki 3-column me set ho jaye
+  const anyaNews = news.filter(n => !mainCategories.includes(n.category)).slice(0, 12); 
 
   return (
     <div className="bg-surface">
@@ -158,7 +159,6 @@ function HomePage() {
                <h2 className="text-2xl font-extrabold">अन्य ख़बरें</h2>
             </div>
             
-            {/* Yahan grid-cols-3 kar diya hai taaki full width me 3 line me news aaye */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-card border border-border p-5 rounded-lg shadow-sm">
               {anyaNews.map((a) => (
                 <ArticleListItem key={`anya-${a.slug}`} a={a} />

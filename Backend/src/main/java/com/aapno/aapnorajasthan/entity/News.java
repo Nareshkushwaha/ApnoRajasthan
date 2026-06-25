@@ -29,18 +29,19 @@ public class News {
 
     private String status = "Draft";
 
-    // 👉 NAYE FIELDS YAHAN ADD KIYE HAIN
     private String urlSlug;
     private String subCategory;
     private String metaTitle;
     private String keywords;
     
-    @Column(length = 1000) // Description lamba ho sakta hai isliye length badha di
+    @Column(length = 1000) 
     private String metaDesc;
     
     private String publishType;
     private String scheduleTime;
-    private boolean isBreaking;
+    
+    @Column(columnDefinition = "boolean default false")
+    private Boolean isBreaking = false;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -49,7 +50,6 @@ public class News {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Default Constructor (JPA ke liye zaroori hai)
     public News() {
     }
 
@@ -78,7 +78,6 @@ public class News {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    // 👉 NAYE GETTERS & SETTERS
     public String getUrlSlug() { return urlSlug; }
     public void setUrlSlug(String urlSlug) { this.urlSlug = urlSlug; }
 
@@ -100,10 +99,8 @@ public class News {
     public String getScheduleTime() { return scheduleTime; }
     public void setScheduleTime(String scheduleTime) { this.scheduleTime = scheduleTime; }
 
-    public boolean isBreaking() { return isBreaking; }
-    public void setBreaking(boolean breaking) { isBreaking = breaking; }
-
-    // ==========================================
+    public Boolean getIsBreaking() { return isBreaking; }
+    public void setIsBreaking(Boolean isBreaking) { this.isBreaking = isBreaking; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

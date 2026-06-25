@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Save, Send, Upload, Search, Link as LinkIcon, Image as ImageIcon, Bolt, Wrench, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
-import { useAuth } from "@/lib/auth"; // 👉 NAYA: User check karne ke liye
+import { useAuth } from "@/lib/auth"; 
 
 import { CKEditor } from 'ckeditor4-react';
 
@@ -20,16 +20,15 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
   const { id } = useParams();
   const nav = useNavigate();
   
-  // 👉 NAYA: Login wale user ka data nikalna
   const { user } = useAuth();
-  const isAdmin = user?.role?.toLowerCase() === "admin"; // Check ki ye Admin hai ya Editor
+  const isAdmin = user?.role?.toLowerCase() === "admin"; 
   
   const [title, setTitle] = useState("");
   const [urlSlug, setUrlSlug] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
-  const [author, setAuthor] = useState(""); // Edit ke time purana author save rakhne ke liye
+  const [author, setAuthor] = useState(""); 
   const [metaTitle, setMetaTitle] = useState("");
   const [keywords, setKeywords] = useState("");
   const [metaDesc, setMetaDesc] = useState("");
@@ -78,9 +77,13 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
     if (!content) return toast.error("Content is required"); 
     if (!category) return toast.error("Category is required");
     
+    // Schedule time validation
+    if (publish && publishType === "schedule" && !scheduleTime) {
+      return toast.error("कृपया पब्लिश करने का समय और तारीख चुनें!");
+    }
+    
     setIsSubmitting(true);
 
-    // 👉 NAYA: Author ka naam auto-set karna. (Agar purana hai to wo, nahi to login user ka naam)
     const finalAuthor = author || user?.name || "Staff";
 
     const newsData: any = { 
@@ -126,22 +129,28 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
     }
   };
 
-  const handleInsertImage = (e: any) => {
-    if (!editorInstance) return;
-    const file = e.target.files[0];
-    if (file) {
-        let altText = prompt("🔍 SEO के लिए इस फोटो का नाम (Alt Tag) लिखें:", "News Image");
-        if (altText == null) altText = ""; 
-        
-        const reader = new FileReader();
-        reader.onload = (event: any) => {
-            const imgHtml = `<div style="text-align: center;"><img src="${event.target.result}" alt="${altText}" style="max-width: 100%; height: auto; border-radius: 8px; margin: 15px auto; display: inline-block;" /></div><p><br></p>`;
-            editorInstance.insertHtml(imgHtml);
-        }
-        reader.readAsDataURL(file);
+// ArticleForm.tsx ke handleInsertImage function ko ise replace kardo:
+const handleInsertImage = (e: any) => {
+  if (!editorInstance) return;
+  const file = e.target.files[0];
+  if (file) {
+    let altText = prompt("🔍 SEO के लिए इस फोटो का नाम (Alt Tag) लिखें:", "News Image");
+    if (altText == null) altText = ""; 
+    
+    const reader = new FileReader();
+    reader.onload = (event: any) => {
+      // 👉 FIX: Yahan width: 100% aur object-fit: cover joda hai taaki image fail jaye
+      const imgHtml = `
+        <div style="text-align: center; margin: 20px 0;">
+          <img src="${event.target.result}" alt="${altText}" 
+               style="width: 100%; max-width: 800px; height: auto; border-radius: 12px; display: block; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+        </div><p><br></p>`;
+      editorInstance.insertHtml(imgHtml);
     }
-    e.target.value = ""; 
-  };
+    reader.readAsDataURL(file);
+  }
+  e.target.value = ""; 
+};
 
   return (
     <div className="pb-10">
@@ -149,10 +158,8 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
           <>
             <Button asChild variant="outline"><Link to="/admin/articles"><ArrowLeft className="mr-1 h-4 w-4" /> Back</Link></Button>
             
-            {/* 👉 1. Draft Button: Sabko dikhega */}
             <Button variant="outline" disabled={isSubmitting} onClick={() => save(false)}><Save className="mr-1 h-4 w-4" /> Save Draft</Button>
             
-            {/* 👉 2. Publish Button: SIRF Admin ko dikhega */}
             {isAdmin && (
               <Button className="gradient-primary" disabled={isSubmitting} onClick={() => save(true)}>
                 <Send className="mr-1 h-4 w-4" /> {isSubmitting ? "Saving..." : "Publish"}
@@ -163,7 +170,6 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
       />
       
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* LEFT COLUMN: Main Content & SEO */}
         <Card className="lg:col-span-2 shadow-card border-t-4 border-t-primary">
           <CardContent className="space-y-6 p-6">
             
@@ -174,11 +180,19 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
               </div>
               <div className="space-y-2">
                 <Label className="text-base text-primary flex items-center gap-1"><LinkIcon className="h-4 w-4" /> English URL <span className="text-destructive">*</span></Label>
-                <Input value={urlSlug} onChange={(e) => setUrlSlug(e.target.value)} placeholder="eg: modi-visit-jaipur" className="text-lg py-5" />
+                {/* 👉 FIX YAHAN HAI: Ye input apne aap spaces ko hata kar dash (-) laga dega */}
+                <Input 
+                  value={urlSlug} 
+                  onChange={(e) => {
+                    const fixedSlug = e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                    setUrlSlug(fixedSlug);
+                  }} 
+                  placeholder="eg: modi-visit-jaipur" 
+                  className="text-lg py-5" 
+                />
               </div>
             </div>
 
-            {/* SEO Section */}
             <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800 space-y-3">
               <h6 className="font-bold flex items-center gap-2 text-slate-700 dark:text-slate-300">
                 <Search className="h-4 w-4" /> SEO & Metadata
@@ -190,7 +204,6 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
               </div>
             </div>
 
-            {/* Editor Section */}
             <div className="space-y-3 pt-2">
               <div className="flex flex-wrap items-end justify-between gap-2">
                 <Label className="text-lg">Full Story <span className="text-destructive">*</span></Label>
@@ -241,7 +254,6 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
               </div>
             </div>
 
-            {/* 👉 3. Breaking News: SIRF Admin ko dikhega */}
             {isAdmin && (
               <div className="flex items-center justify-between bg-card text-foreground p-4 rounded-lg border border-border mt-4 shadow-sm">
                 <div className="space-y-0.5">
@@ -262,7 +274,6 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
           </CardContent>
         </Card>
 
-        {/* RIGHT COLUMN: Settings */}
         <div className="space-y-6">
           <Card className="shadow-card"><CardContent className="space-y-3 p-5">
             <Label className="text-base">Featured Image</Label>
@@ -318,8 +329,6 @@ export default function ArticleForm({ mode }: { mode: "new" | "edit" }) {
                 </Select>
               </div>
             )}
-
-            {/* Author wala dropdown delete kar diya gaya hai */}
 
             <div className="space-y-3 pt-3 border-t">
               <Label>Publishing Timing</Label>

@@ -25,14 +25,20 @@ public class NewsService {
         return newsRepository.findAll();
     }
 
-    // 👉 YAHAN FIX KIYA HAI: Pagination ke sath news lane ke liye naya method
+    // Pagination ke sath news lane ke liye naya method
     public Page<News> getAllNewsPaged(Pageable pageable) {
         return newsRepository.findAll(pageable);
     }
 
+    // ID se news lana
     public News getNewsById(Long id) {
         // Agar id nahi milti toh null return karega ya error dega
         return newsRepository.findById(id).orElse(null); 
+    }
+    
+    // 👉 MAGIC FIX YAHAN HAI: Ab ye English naam (Slug) se bhi news nikal layega!
+    public News getNewsByUrlSlug(String urlSlug) {
+        return newsRepository.findByUrlSlug(urlSlug).orElse(null);
     }
     
     // Category ke hisab se news lana

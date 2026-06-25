@@ -23,7 +23,6 @@ function AboutPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 👉 API calls ko alag-alag handle karne ke liye async function banaya
     async function fetchAboutData() {
       setLoading(true);
 
@@ -40,7 +39,7 @@ function AboutPage() {
         console.error("Page content load hone me error:", err);
       }
 
-      // 2. Phir Users data fetch karenge (Agar upar wala fail bhi hua, toh ye chalega)
+      // 2. Phir Users data fetch karenge
       try {
         const userRes = await fetch(`${API_BASE_URL}/api/users/all`);
         if (userRes.ok) {
@@ -56,7 +55,7 @@ function AboutPage() {
           }
 
           // 👉 Sirf Admin aur Editor ko filter kar rahe hain
-         const onlyTeamMembers = usersArray.filter((user: any) => {           
+          const onlyTeamMembers = usersArray.filter((user: any) => {           
               if (!user || !user.role) return false;
             const role = user.role.toLowerCase().trim();
             return role === "admin" || role === "editor";
@@ -67,7 +66,7 @@ function AboutPage() {
       } catch (err) {
         console.error("Users load hone me error:", err);
       } finally {
-        setLoading(false); // 👉 Dono API chalne ke baad loading band
+        setLoading(false); 
       }
     }
 
@@ -104,20 +103,25 @@ function AboutPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {team.map((user) => (
-                <div key={user.id} className="bg-card border border-border rounded-lg p-5 text-center shadow-sm hover:shadow-md transition-shadow">
-                  <img 
-                    src={user.image || `https://ui-avatars.com/api/?name=${user.name}&background=random&color=fff`} 
-                    alt={user.name} 
-                    className="w-24 h-24 rounded-full mx-auto object-cover border-2 border-primary/20" 
-                  />
-                  <div className="font-bold mt-4 text-lg capitalize">{user.name}</div>
-                  <div className="text-xs text-primary uppercase font-bold tracking-wider mt-1">
-                    {user.role}
+              {team.map((user) => {
+                // 👉 MAGIC FIX YAHAN HAI: Ab backend se chahe profilePic aaye ya image, ye pakad lega!
+                const userImage = user.profilePic || user.image || user.imageUrl || `https://ui-avatars.com/api/?name=${user.name}&background=random&color=fff`;
+
+                return (
+                  <div key={user.id} className="bg-card border border-border rounded-lg p-5 text-center shadow-sm hover:shadow-md transition-shadow">
+                    <img 
+                      src={userImage} 
+                      alt={user.name} 
+                      className="w-24 h-24 rounded-full mx-auto object-cover border-2 border-primary/20" 
+                    />
+                    <div className="font-bold mt-4 text-lg capitalize">{user.name}</div>
+                    <div className="text-xs text-primary uppercase font-bold tracking-wider mt-1">
+                      {user.role}
+                    </div>
+                    {user.email && <p className="text-xs text-muted-foreground mt-2 truncate">{user.email}</p>}
                   </div>
-                  {user.email && <p className="text-xs text-muted-foreground mt-2 truncate">{user.email}</p>}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>

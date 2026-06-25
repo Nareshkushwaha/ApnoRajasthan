@@ -2,7 +2,7 @@ package com.aapno.aapnorajasthan.controller;
 
 import com.aapno.aapnorajasthan.entity.News;
 import com.aapno.aapnorajasthan.service.NewsService;
-import com.aapno.aapnorajasthan.service.R2StorageService; // R2 Service import ki hai
+import com.aapno.aapnorajasthan.service.R2StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +21,6 @@ public class AdminNewsController {
     @Autowired
     private NewsService newsService;
 
-    // R2 Storage Service ko inject kiya
     @Autowired
     private R2StorageService r2StorageService;
 
@@ -46,7 +45,6 @@ public class AdminNewsController {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             News news = objectMapper.readValue(newsJson, News.class);
             
-            // Image Cloudflare R2 me upload hogi
             if (imageFile != null && !imageFile.isEmpty()) {
                 String fileUrl = r2StorageService.uploadFile(imageFile);
                 news.setImageUrl(fileUrl);
@@ -70,13 +68,12 @@ public class AdminNewsController {
     public java.util.Map<String, Object> uploadEditorImage(@RequestParam("upload") MultipartFile file) {
         java.util.Map<String, Object> response = new java.util.HashMap<>();
         try {
-            // Editor ki image bhi Cloudflare R2 me upload hogi
             if (file != null && !file.isEmpty()) {
                 String fileUrl = r2StorageService.uploadFile(file);
 
                 response.put("uploaded", 1);
                 response.put("fileName", file.getOriginalFilename());
-                response.put("url", fileUrl); // R2 ka public URL yaha pass hoga
+                response.put("url", fileUrl); 
                 return response;
             }
         } catch (Exception e) {

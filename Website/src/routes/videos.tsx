@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { CATEGORY_LABELS, CATEGORY_PATH } from "@/data/news";
 import { PageHero } from "@/components/news-ui";
 import { Play, X, Loader2, Facebook, Twitter, Linkedin, Link2 } from "lucide-react";
-import { toast } from "sonner"; // Notification ke liye
+import { toast } from "sonner"; 
 
 import { API_BASE_URL } from "@/lib/api";
 
@@ -19,10 +19,10 @@ export const Route = createFileRoute("/videos")({
   component: VideosPage,
 });
 
-// YouTube URL se Video ID nikalne ka function (taki iframe theek se chale)
+// 👉 FIX: Ye naya aur powerful function hai jo har tarah ke YouTube link padh lega
 function getYouTubeId(url: string) {
   if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;
 }
@@ -44,15 +44,21 @@ function VideosPage() {
           return;
         }
 
-        const formattedVideos = data.map((v: any) => ({
-          id: v.id.toString(),
-          title: v.title,
-          // Agar admin ne videoUrl daala hai, toh wahi use hoga, warna dummy
-          videoUrl: v.videoUrl || "https://www.youtube.com/watch?v=dQw4w9WgXcQ", 
-          thumbnail: v.thumb || `https://img.youtube.com/vi/${getYouTubeId(v.videoUrl) || 'dQw4w9WgXcQ'}/maxresdefault.jpg`,
-          category: v.category ? v.category.trim().toLowerCase() : "rajasthan",
-          duration: v.duration || "New",
-        }));
+        const formattedVideos = data.map((v: any) => {
+          // 👉 MAGIC FIX YAHAN HAI: Backend se link 'v.url' ke naam se aa raha hai
+          const realUrl = v.url || "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+          const videoId = getYouTubeId(realUrl) || 'dQw4w9WgXcQ';
+
+          return {
+            id: v.id.toString(),
+            title: v.title,
+            videoUrl: realUrl, 
+            thumbnail: v.thumb || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+            category: v.category ? v.category.trim().toLowerCase() : "rajasthan",
+            duration: "New",
+            videoId: videoId // Iframe ke liye asali ID save kar li
+          };
+        });
         
         setVideos(formattedVideos.reverse());
       })
@@ -64,8 +70,6 @@ function VideosPage() {
   }, []);
 
   const cur = videos.find((v) => v.id === active);
-  
-  // Related Videos (Jo video chal raha hai usko chhod kar)
   const relatedVideos = videos.filter((v) => v.id !== active).slice(0, 4);
 
   const copyToClipboard = (url: string) => {
@@ -115,7 +119,6 @@ function VideosPage() {
         )}
       </div>
 
-      {/* 🔥 NAYA BADAAL: ASALI YOUTUBE PLAYER, SHARE BUTTONS AUR RELATED VIDEOS 🔥 */}
       {cur && (
         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setActive(null)}>
           <div className="relative w-full max-w-5xl bg-ink rounded-xl overflow-hidden shadow-2xl my-auto" onClick={(e) => e.stopPropagation()}>
@@ -124,10 +127,10 @@ function VideosPage() {
               <X size={24} />
             </button>
             
-            {/* 1. YouTube Video Player */}
+            {/* 👉 FIX: Ab Iframe mein asali videoId jayegi jo humne upar nikali hai */}
             <div className="aspect-video bg-black relative">
               <iframe 
-                src={`https://www.youtube.com/embed/${getYouTubeId(cur.videoUrl)}?autoplay=1&rel=0`} 
+                src={`https://www.youtube.com/embed/${cur.videoId}?autoplay=1&rel=0`} 
                 title={cur.title}
                 className="w-full h-full absolute inset-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -138,7 +141,6 @@ function VideosPage() {
             <div className="p-6 bg-card text-foreground">
               <h2 className="text-2xl font-bold leading-snug">{cur.title}</h2>
               
-              {/* 2. Share Buttons */}
               <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-b border-border py-4">
                 <span className="text-sm font-semibold text-muted-foreground mr-1">शेयर करें:</span>
                 
@@ -159,7 +161,6 @@ function VideosPage() {
                 </button>
               </div>
 
-              {/* 3. Related Videos */}
               {relatedVideos.length > 0 && (
                 <div className="mt-8">
                   <h3 className="font-bold text-lg mb-4 flex items-center gap-2">

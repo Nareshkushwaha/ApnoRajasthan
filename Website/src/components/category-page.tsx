@@ -40,9 +40,10 @@ export function CategoryPage({ category, layout, kicker, subtitle, extras }: Pro
         }
 
         const formattedNews = data.map((n: any) => ({
-          slug: n.id.toString(),
+          // 👉 MAGIC FIX: ID ki jagah ab Slug (English URL) use hoga
+          slug: n.urlSlug && n.urlSlug.trim() !== "" ? n.urlSlug : n.id.toString(),
           title: n.title,
-          excerpt: n.content ? n.content.substring(0, 120) + "..." : "",
+          excerpt: n.content ? n.content.replace(/<[^>]+>/g, '').substring(0, 120) + "..." : "",
           body: [n.content || ""],
           image: n.imageUrl || "https://picsum.photos/800/400",
           category: n.category ? n.category.trim().toLowerCase() : 'rajasthan',
@@ -130,10 +131,7 @@ function DynamicTrending({ items, title }: { items: Article[], title: string }) 
   );
 }
 
-// ---------------------------------------------------------
-// NICHE KE LAYOUTS MEIN KOI CHHED CHHAD NAHI KI GAYI HAI
-// ---------------------------------------------------------
-
+// Layout components...
 function LeadLayout({ lead, rest }: { lead: Article; rest: Article[] }) {
   return (
     <>

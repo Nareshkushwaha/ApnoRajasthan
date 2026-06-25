@@ -31,15 +31,17 @@ export default function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // 👉 FIX 1: Theme State Initialization
-  // Hum pehle localStorage check karenge, wahi sabse zyada matter karta hai.
+  // 👉 ASLI FIX YAHAN HAI: Page load hote hi turant block kardo System Theme ko
   const [dark, setDark] = useState(() => {
+    // 1. Sabse pehle local storage check karo
     const savedTheme = localStorage.getItem("admin-theme");
-    if (savedTheme) {
-      return savedTheme === "dark";
-    }
-    // Agar local storage mein kuch nahi hai, tabhi system default lenge
-    return document.documentElement.classList.contains("dark");
+    
+    // 2. Agar user ne pehle kabhi button daba kar save kiya hai, toh WAHi mano
+    if (savedTheme === "light") return false;
+    if (savedTheme === "dark") return true;
+    
+    // 3. Agar pehli baar aaya hai (koi storage nahi), tabhi default dark rakho ya system theme check karo
+    return true; // Default dark rakhna hai toh true, light rakhna hai toh false kardo
   });
   
   const [notifs, setNotifs] = useState<any[]>([]);
@@ -60,8 +62,7 @@ export default function AdminLayout() {
     }
   }, [isProfileOpen, user]);
 
-  // 👉 FIX 2: Instant Theme Apply on State Change
-  // Jaise hi 'dark' state change hogi, hum turant class toggle karenge aur localStorage update karenge
+  // 👉 SECOND FIX: Classlist ko forcefully update karo aur Storage mein save karo
   useEffect(() => {
     const root = document.documentElement;
     if (dark) {
@@ -125,7 +126,7 @@ export default function AdminLayout() {
 
   const isAdmin = user?.role?.toLowerCase() === "admin";
 
-  // 👉 FIX 3: Button Click Handler for Instant Feedback
+  // Toggle button logic
   const toggleTheme = () => {
     setDark((prevDark) => !prevDark);
   };
@@ -149,7 +150,6 @@ export default function AdminLayout() {
             </div>
             <div className="ml-auto flex items-center gap-1 sm:gap-2">
               
-              {/* 👉 FIX 4: Updated button onClick to use toggleTheme */}
               <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
                 {dark ? <Sun className="h-5 w-5 text-yellow-400" /> : <Moon className="h-5 w-5 text-slate-700" />}
               </Button>

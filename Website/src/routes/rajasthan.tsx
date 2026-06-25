@@ -58,12 +58,13 @@ function RajasthanPage() {
       .then(data => {
         if (Array.isArray(data)) {
           const formatted = data.map((n: any) => ({
-            slug: n.id.toString(),
+            // 👉 MAGIC FIX YAHAN HAI: Ab ye ID ki jagah English naam (Slug) bhejega
+            slug: n.urlSlug && n.urlSlug.trim() !== "" ? n.urlSlug : n.id.toString(),
             title: n.title,
             excerpt: n.content ? n.content.replace(/<[^>]+>/g, '').substring(0, 120) + "..." : "",
             image: n.imageUrl || "https://picsum.photos/800/400",
             category: n.category ? n.category.trim().toLowerCase() : '',
-            subCategory: n.subCategory || "", // 👉 यहाँ से संभाग (subCategory) मिल रहा है
+            subCategory: n.subCategory || "", 
             publishedAt: n.createdAt || new Date().toISOString()
           }));
           
